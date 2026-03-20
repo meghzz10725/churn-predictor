@@ -3,9 +3,12 @@ import numpy as np
 
 # Load both models and scaler once when file is imported
 # This way they stay in memory — faster API responses
-log_model = joblib.load('../models/logistic_model.pkl')
-xgb_model = joblib.load('../models/xgb_model.pkl')
-scaler = joblib.load('../models/scaler.pkl')
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+log_model = joblib.load(os.path.join(BASE_DIR, 'models', 'logistic_model.pkl'))
+xgb_model = joblib.load(os.path.join(BASE_DIR, 'models', 'xgb_model.pkl'))
+scaler     = joblib.load(os.path.join(BASE_DIR, 'models', 'scaler.pkl'))
 
 def route_prediction(features_array):
     """

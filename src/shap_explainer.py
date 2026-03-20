@@ -4,8 +4,11 @@ import numpy as np
 import pandas as pd
 
 # Load models and feature names
-xgb_model = joblib.load('../models/xgb_model.pkl')
-feature_names = joblib.load('../models/feature_names.pkl')
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+xgb_model    = joblib.load(os.path.join(BASE_DIR, 'models', 'xgb_model.pkl'))
+feature_names = joblib.load(os.path.join(BASE_DIR, 'models', 'feature_names.pkl'))
 
 # Create SHAP explainer once at startup
 # TreeExplainer is specifically designed for tree based models like XGBoost
