@@ -5,38 +5,33 @@ import joblib
 from adaptive_router import route_prediction
 from shap_explainer import get_top_reasons
 
-# ── App setup ───────────────────────────────────────────────
 app = FastAPI(
     title="Churn Predictor API",
     description="Adaptive ML system for customer churn prediction with explainability",
     version="1.0.0"
 )
 
-# ── Input schema ─────────────────────────────────────────────
-# Pydantic validates every incoming request automatically
-# If any field is missing or wrong type → auto error response
 class CustomerData(BaseModel):
-    gender: int                # 0=Female, 1=Male
-    SeniorCitizen: int         # 0=No, 1=Yes
-    Partner: int               # 0=No, 1=Yes
-    Dependents: int            # 0=No, 1=Yes
-    tenure: int                # months as customer
-    PhoneService: int          # 0=No, 1=Yes
-    MultipleLines: int         # 0=No, 1=Yes, 2=No phone
-    InternetService: int       # 0=DSL, 1=Fiber, 2=No
-    OnlineSecurity: int        # 0=No, 1=Yes, 2=No internet
-    OnlineBackup: int          # 0=No, 1=Yes, 2=No internet
-    DeviceProtection: int      # 0=No, 1=Yes, 2=No internet
-    TechSupport: int           # 0=No, 1=Yes, 2=No internet
-    StreamingTV: int           # 0=No, 1=Yes, 2=No internet
-    StreamingMovies: int       # 0=No, 1=Yes, 2=No internet
-    Contract: int              # 0=Month-to-month, 1=One year, 2=Two year
-    PaperlessBilling: int      # 0=No, 1=Yes
-    PaymentMethod: int         # 0=Bank transfer, 1=Credit card, 2=Electronic, 3=Mailed
-    MonthlyCharges: float      # monthly bill amount
-    TotalCharges: float        # total amount paid
+    gender: int
+    SeniorCitizen: int
+    Partner: int
+    Dependents: int
+    tenure: int
+    PhoneService: int
+    MultipleLines: int
+    InternetService: int
+    OnlineSecurity: int
+    OnlineBackup: int
+    DeviceProtection: int
+    TechSupport: int
+    StreamingTV: int
+    StreamingMovies: int
+    Contract: int
+    PaperlessBilling: int
+    PaymentMethod: int
+    MonthlyCharges: float
+    TotalCharges: float
 
-# ── Health check endpoint ────────────────────────────────────
 @app.get("/")
 def root():
     return {
@@ -48,11 +43,9 @@ def root():
         }
     }
 
-# ── Main predict endpoint ─────────────────────────────────────
 @app.post("/predict")
 def predict(customer: CustomerData):
     try:
-        # Step 1 — convert input to numpy array
         features = np.array([[
             customer.gender,
             customer.SeniorCitizen,
@@ -75,13 +68,23 @@ def predict(customer: CustomerData):
             customer.TotalCharges
         ]])
 
-        # Step 2 — adaptive router decides which model
+        # Step 1 — adaptive router
         prediction = route_prediction(features)
 
-        # Step 3 — SHAP explains the prediction
+        # Step 2 — SHAP reasons
         reasons = get_top_reasons(features, top_n=3)
 
-        # Step 4 — build final response
+        # Step 3 — LLM insight ONLY for uncertain cases
+        # This saves API calls — only runs when model is genuinely confused
+        llm_insight = None
+        if prediction["needs_llm"]:
+            from llm_insights import generate_insight
+            llm_insight = generate_insight(
+                prediction["churn_probability"],
+                reasons,
+                prediction["model_used"]
+            )
+
         churn_prob = prediction["churn_probability"]
 
         return {
@@ -91,6 +94,7 @@ def predict(customer: CustomerData):
             "confidence": prediction["confidence"],
             "top_reasons": reasons,
             "needs_llm": prediction["needs_llm"],
+            "llm_insight": llm_insight,
             "recommendation": get_recommendation(churn_prob)
         }
 
@@ -99,7 +103,6 @@ def predict(customer: CustomerData):
 
 
 def get_risk_label(prob):
-    """Convert probability to human readable risk level"""
     if prob >= 0.75:
         return "HIGH RISK"
     elif prob >= 0.45:
@@ -109,7 +112,6 @@ def get_risk_label(prob):
 
 
 def get_recommendation(prob):
-    """Basic recommendation based on churn probability"""
     if prob >= 0.75:
         return "Immediate intervention needed — offer retention discount or dedicated support"
     elif prob >= 0.45:
