@@ -11,3 +11,4 @@ fastapi
 uvicorn
 groq
 python-dotenv
+mlflow

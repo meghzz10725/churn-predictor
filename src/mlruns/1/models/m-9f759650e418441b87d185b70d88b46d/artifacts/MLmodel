@@ -1,0 +1,23 @@
+artifact_path: file:C:/Users/Meghana/Desktop/churn-predictor/src/mlruns/1/models/m-9f759650e418441b87d185b70d88b46d/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.10.1
+model_id: m-9f759650e418441b87d185b70d88b46d
+model_size_bytes: 868
+model_uuid: m-9f759650e418441b87d185b70d88b46d
+prompts: null
+run_id: 1738b9af4d23425aa6994394708d77fe
+utc_time_created: '2026-03-20 12:30:39.128490'

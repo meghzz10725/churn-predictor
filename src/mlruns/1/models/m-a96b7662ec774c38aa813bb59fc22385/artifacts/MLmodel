@@ -1,0 +1,22 @@
+artifact_path: file:C:/Users/Meghana/Desktop/churn-predictor/src/mlruns/1/models/m-a96b7662ec774c38aa813bb59fc22385/artifacts
+flavors:
+  python_function:
+    data: model.ubj
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.13.7
+  xgboost:
+    code: null
+    data: model.ubj
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: ubj
+    xgb_version: 3.2.0
+mlflow_version: 3.10.1
+model_id: m-a96b7662ec774c38aa813bb59fc22385
+model_size_bytes: 807443
+model_uuid: m-a96b7662ec774c38aa813bb59fc22385
+prompts: null
+run_id: fea368c5e31c45719e904127702a4f28
+utc_time_created: '2026-03-20 12:33:58.769699'
