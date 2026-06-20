@@ -157,9 +157,3 @@ uvicorn main:app --reload
 - Senior citizens show **15% higher** churn rate than non-seniors
 
 ---
-
-## 🎯 Resume Bullet Points
-
-- Built ChurnShield — adaptive ML system routing predictions across LR/XGBoost/LLM based on confidence scores, deployed live via FastAPI on HuggingFace
-- Implemented SHAP explainability returning top 3 business reasons per prediction with human-readable retention strategies via Groq LLM
-- Tracked 8 MLflow experiments identifying optimal XGBoost config (AUC 0.848) — depth=6 showed clear overfitting vs depth=4
